@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2018
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RightMechanicsDLL", "RightMechanicsDLL.csproj", "{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B692598-926A-4E56-9092-CF17128E7F45}
+	EndGlobalSection
+EndGlobal
