@@ -5,16 +5,30 @@ VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RightMechanicsDLL", "RightMechanicsDLL.csproj", "{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Container", "Container\Container.csproj", "{1FB14B26-98AB-41E1-BCA1-3327581DEB28}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Debug|x86.Build.0 = Debug|Any CPU
 		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|x86.ActiveCfg = Release|Any CPU
+		{301C8C21-F1FE-4AF0-9CE7-190CA79E1390}.Release|x86.Build.0 = Release|Any CPU
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Debug|x86.ActiveCfg = Debug|x86
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Debug|x86.Build.0 = Debug|x86
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Release|Any CPU.ActiveCfg = Release|x86
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Release|x86.ActiveCfg = Release|x86
+		{1FB14B26-98AB-41E1-BCA1-3327581DEB28}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
