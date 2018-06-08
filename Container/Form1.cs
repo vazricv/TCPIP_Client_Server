@@ -51,7 +51,7 @@ namespace Container
 				//unityHWND = process.MainWindowHandle;
 				EnumChildWindows(panel1.Handle, WindowEnum, IntPtr.Zero);
 
-				unityHWNDLabel.Text = "Unity HWND: 0x" + unityHWND.ToString("X8");
+                unityHWNDLabel.Text = ""; // "Unity HWND: 0x" + unityHWND.ToString("X8");
 			}
 			catch (Exception ex)
 			{
