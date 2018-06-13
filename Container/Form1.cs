@@ -12,6 +12,8 @@ using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
 using System.Messaging;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Container
 {
@@ -127,6 +129,79 @@ namespace Container
         {
             txtMessage.Text = RMMessaging.ReceiveMessage();
             lbmsgCount.Text = RMMessaging.MessageCounts().ToString();
+        }
+        ServerModel myServer;
+        ClientModel client;
+        private void btnServer_Click(object sender, EventArgs e)
+        {
+
+            myServer = new ServerModel();
+            myServer.AcceptConnection();
+            myServer.OnDataRecived += MyServer_OnDataRecived;
+            myServer.OnClientConnected += MyServer_OnClientConnected;
+
+            btnSend.Visible = false;
+            btnClient.Visible = false;
+         }
+
+        private void MyServer_OnClientConnected(Socket client)
+        {
+            myServer.StartReciving();
+        }
+
+        private void MyServer_OnDataRecived(string data)
+        {
+            Console.WriteLine("Recived :");
+            Console.WriteLine(data);
+            txtMessage.Invoke((MethodInvoker)(() =>
+            {
+                txtMessage.Text = data;
+            }));
+        }
+        private void btnClient_Click(object sender, EventArgs e)
+        {
+            client = new ClientModel();
+            client.OnConnectedToServer += Client_OnConnectedToServer;
+            client.OnDataRecived += Client_OnDataRecived;
+            client.ConnectToServer();
+
+            btnsendfromserver.Visible = false;
+            btnServer.Visible = false;
+        }
+
+        private void Client_OnDataRecived(string data)
+        {
+            txtMessage.Invoke((MethodInvoker)(() =>
+            {
+                txtMessage.Text = data;
+            }));
+        }
+
+        private void Client_OnConnectedToServer(Socket server)
+        {
+            client.StartReciving();
+        }
+
+        private void btnSendData_Click(object sender, EventArgs e)
+        {
+            client.SendData(txtMessage.Text);
+            txtMessage.Text = "";
+        }
+
+        private void btnresume_Click(object sender, EventArgs e)
+        {
+            myServer.SendData(txtMessage.Text);
+            txtMessage.Text = "";
+        }
+
+        private void btnDisconnect_Click(object sender, EventArgs e)
+        {
+            client.Disconnect();
+        }
+
+        private void btnCloseServer_Click(object sender, EventArgs e)
+        {
+            myServer.Disconnect();
         }
     }
 }
