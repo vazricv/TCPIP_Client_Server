@@ -14,7 +14,8 @@ public class ClientModel
     public delegate void OnConnectedToServerDelegate(Socket server);
     public event OnConnectedToServerDelegate OnConnectedToServer;
 
-    public int BufferSize = 100;
+
+    public int BufferSize = 1500;
     TcpClient client;
     bool stopReciver = false;
     System.IO.Stream connectionStream;
@@ -23,13 +24,13 @@ public class ClientModel
 
     public bool IsConnected { get { return connected; } }
 
-    public ClientModel(int bufferSize = 100)
+    public ClientModel(int bufferSize = 1500)
     {
         client = new TcpClient();
         BufferSize = bufferSize;
     }
 
-    public void ConnectToServer(string IP = "127.0.0.1", int port = 8001)
+    public void ConnectToServer(string IP = "127.0.0.1", int port = 8002)
     {
         try
         {
@@ -47,15 +48,16 @@ public class ClientModel
         }
     }
 
-
     public void SendData(string data)
     {
+        if (IsConnected)
+        {
+            ASCIIEncoding asen = new ASCIIEncoding();
+            byte[] ba = asen.GetBytes(data);
+            Console.WriteLine("Transmitting.....");
 
-        ASCIIEncoding asen = new ASCIIEncoding();
-        byte[] ba = asen.GetBytes(data);
-        Console.WriteLine("Transmitting.....");
-
-        connectionStream.Write(ba, 0, ba.Length);
+            connectionStream.Write(ba, 0, ba.Length);
+        }
     }
 
     void dataRead(IAsyncResult result)
@@ -77,6 +79,7 @@ public class ClientModel
     {
         if (!connected)
             return;
+        stopReciver = false;
         byte[] buffer = new byte[BufferSize];
 
         connectionStream.BeginRead(buffer, 0, BufferSize, dataRead, buffer);

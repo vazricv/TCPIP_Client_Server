@@ -13,7 +13,7 @@ public class ServerModel
     public delegate void OnClientConnectedDelegate(Socket client);
     public event OnClientConnectedDelegate OnClientConnected;
 
-    public int BufferSize = 100;
+    public int BufferSize = 1500;
     IPAddress ipAd;
     TcpListener server;
     Socket client;
@@ -23,13 +23,13 @@ public class ServerModel
     bool connected = false;
     public bool IsConnected { get { return connected; } }
 
-    public ServerModel(string IP = "127.0.0.1", int port = 8001)
+    public ServerModel(string IP = "127.0.0.1", int port = 8002)
     {
         ipAd = IPAddress.Parse(IP);
         server = new TcpListener(ipAd, port);
     }
 
-    public void AcceptConnection(int bufferSize = 100)
+    public void AcceptConnection(int bufferSize = 1500)
     {
         this.BufferSize = bufferSize;
         server.Start();

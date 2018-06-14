@@ -14,6 +14,7 @@ using System.Messaging;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.IO;
 
 namespace Container
 {
@@ -140,7 +141,7 @@ namespace Container
             myServer.OnDataRecived += MyServer_OnDataRecived;
             myServer.OnClientConnected += MyServer_OnClientConnected;
 
-            btnSend.Visible = false;
+            btnSendData.Visible = false;
             btnClient.Visible = false;
          }
 
@@ -202,6 +203,52 @@ namespace Container
         private void btnCloseServer_Click(object sender, EventArgs e)
         {
             myServer.Disconnect();
+        }
+
+        private void btnpos_Click(object sender, EventArgs e)
+        {
+            using (var f = new OpenFileDialog())
+            {
+                f.Filter = "CSV file *.CSV|*.csv";
+                f.Title = "Select CSV file or Positions";
+                if (f.ShowDialog() != DialogResult.Cancel)
+                {
+                    txtCSVPos.Text = f.FileName;
+                }
+            }
+        }
+
+        private void btnrot_Click(object sender, EventArgs e)
+        {
+            using (var f = new OpenFileDialog())
+            {
+                f.Filter = "CSV file *.CSV|*.csv";
+                f.Title = "Select CSV file or Orientations";
+                if (f.ShowDialog() != DialogResult.Cancel)
+                {
+                    txtCSVorient.Text = f.FileName;
+                }
+            }
+        }
+        string[] posData;
+        string[] rotData;
+        int frameNumber = 0;
+        private void btnStartSimulation_Click(object sender, EventArgs e)
+        {
+           
+            posData = File.ReadAllLines(txtCSVPos.Text);
+            rotData = File.ReadAllLines(txtCSVPos.Text);
+            frameNumber = 0;
+            timer1.Start();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            string data = posData[frameNumber] +"\n"+ rotData[frameNumber];
+            txtMessage.Text = data;
+            lbmsgCount.Text = data.Length.ToString();
+            frameNumber++;
+            client.SendData(data);
         }
     }
 }
