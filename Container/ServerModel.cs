@@ -105,6 +105,13 @@ public class ServerModel
     {
         if(connected)
         {
+            if (data.Length < BufferSize)
+            {
+                data = data.PadRight(BufferSize, ' ');
+            }
+            else if (data.Length > BufferSize)
+                data = data.Substring(0, BufferSize);
+
             ASCIIEncoding asen = new ASCIIEncoding();
             client.Send(asen.GetBytes(data));
         }

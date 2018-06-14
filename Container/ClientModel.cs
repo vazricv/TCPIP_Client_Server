@@ -52,6 +52,13 @@ public class ClientModel
     {
         if (IsConnected)
         {
+            if(data.Length < BufferSize)
+            {
+                data = data.PadRight(BufferSize, ' ');
+            }
+            else if (data.Length > BufferSize)
+                data = data.Substring(0, BufferSize);
+
             ASCIIEncoding asen = new ASCIIEncoding();
             byte[] ba = asen.GetBytes(data);
             Console.WriteLine("Transmitting.....");
