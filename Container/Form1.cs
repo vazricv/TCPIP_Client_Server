@@ -15,6 +15,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
+using RightMechanics;
 
 namespace Container
 {
@@ -150,7 +151,7 @@ namespace Container
             myServer.StartReciving();
         }
 
-        private void MyServer_OnDataRecived(string data)
+        private void MyServer_OnDataRecived(string data, TransmitedDataType dataType)
         {
             Console.WriteLine("Recived :");
             Console.WriteLine(data);
@@ -170,12 +171,23 @@ namespace Container
             btnServer.Visible = false;
         }
 
-        private void Client_OnDataRecived(string data)
+        private void Client_OnDataRecived(string data, TransmitedDataType dataType)
         {
             txtMessage.Invoke((MethodInvoker)(() =>
             {
                 txtMessage.Text = data;
             }));
+            if (dataType == TransmitedDataType.Command)
+            {
+                if (data == "stop")
+                {
+                    timer1.Stop();
+                }
+                if (data == "start" && dataIsLoaded)
+                {
+                    timer1.Start();
+                }
+            }
         }
 
         private void Client_OnConnectedToServer(Socket server)
@@ -185,13 +197,13 @@ namespace Container
 
         private void btnSendData_Click(object sender, EventArgs e)
         {
-            client.SendData(txtMessage.Text);
+            client.SendData(txtMessage.Text, TransmitedDataType.Message);
             txtMessage.Text = "";
         }
 
         private void btnresume_Click(object sender, EventArgs e)
         {
-            myServer.SendData(txtMessage.Text);
+            myServer.SendData(txtMessage.Text,TransmitedDataType.Message);
             txtMessage.Text = "";
         }
 
@@ -214,6 +226,7 @@ namespace Container
                 if (f.ShowDialog() != DialogResult.Cancel)
                 {
                     txtCSVPos.Text = f.FileName;
+                    posData = File.ReadAllLines(txtCSVPos.Text);
                 }
             }
         }
@@ -227,28 +240,60 @@ namespace Container
                 if (f.ShowDialog() != DialogResult.Cancel)
                 {
                     txtCSVorient.Text = f.FileName;
+                    rotData = File.ReadAllLines(txtCSVorient.Text);
                 }
             }
         }
         string[] posData;
         string[] rotData;
         int frameNumber = 0;
+        bool dataIsLoaded = false;
         private void btnStartSimulation_Click(object sender, EventArgs e)
         {
            
-            posData = File.ReadAllLines(txtCSVPos.Text);
-            rotData = File.ReadAllLines(txtCSVPos.Text);
-            frameNumber = 0;
+           // posData = File.ReadAllLines(txtCSVPos.Text);
+            //rotData = File.ReadAllLines(txtCSVPos.Text);
+            frameNumber = 1;
+
+            dataIsLoaded = true;
             timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
+            frameNumber++;
+            if (posData.Length <= frameNumber)
+                frameNumber = 1;
             string data = posData[frameNumber] +"\n"+ rotData[frameNumber];
             txtMessage.Text = data;
             lbmsgCount.Text = data.Length.ToString();
+            
+            client.SendData(data, TransmitedDataType.RawData);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string data = posData[0] + "\n" + rotData[0];
+            txtMessage.Text = data;
+            lbmsgCount.Text = data.Length.ToString();
+            client.SendData(data, TransmitedDataType.Headers);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
             frameNumber++;
-            client.SendData(data);
+            if (posData.Length <= frameNumber)
+                frameNumber = 1;
+            string data = posData[frameNumber] + "\n" + rotData[frameNumber];
+            txtMessage.Text = data;
+            lbmsgCount.Text = data.Length.ToString();
+            
+            client.SendData(data, TransmitedDataType.RawData);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            timer1.Interval = Int32.Parse(textBox1.Text);
         }
     }
 }
