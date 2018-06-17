@@ -10,7 +10,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
-using System.Messaging;
+//using System.Messaging;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -38,7 +38,7 @@ namespace Container
         private readonly IntPtr WA_ACTIVE = new IntPtr(1);
         private readonly IntPtr WA_INACTIVE = new IntPtr(0);
 
-        private MessagingQueueManager RMMessaging = new MessagingQueueManager(); 
+       // private MessagingQueueManager RMMessaging = new MessagingQueueManager(); 
         public Form1()
         {
             InitializeComponent();
@@ -65,7 +65,7 @@ namespace Container
                 MessageBox.Show(ex.Message + ".\nCheck if Container.exe is placed next to Child.exe.");
             }
 
-            RMMessaging.CreateMessagingQueue("RMData");
+            //RMMessaging.CreateMessagingQueue("RMData");
 
         }
 
@@ -122,15 +122,15 @@ namespace Container
         
         private void btnSend_Click(object sender, EventArgs e)
         {
-            RMMessaging.SendMessage(txtMessage.Text);
-            txtMessage.Text = "";
-            lbmsgCount.Text = RMMessaging.MessageCounts().ToString();
+            //RMMessaging.SendMessage(txtMessage.Text);
+            //txtMessage.Text = "";
+            //lbmsgCount.Text = RMMessaging.MessageCounts().ToString();
         }
 
         private void brnRecive_Click(object sender, EventArgs e)
         {
-            txtMessage.Text = RMMessaging.ReceiveMessage();
-            lbmsgCount.Text = RMMessaging.MessageCounts().ToString();
+            //txtMessage.Text = RMMessaging.ReceiveMessage();
+            //lbmsgCount.Text = RMMessaging.MessageCounts().ToString();
         }
         ServerModel myServer;
         ClientModel client;
@@ -139,7 +139,7 @@ namespace Container
 
             myServer = new ServerModel();
             myServer.AcceptConnection();
-            myServer.OnDataRecived += MyServer_OnDataRecived;
+            myServer.OnDataReceived += MyServer_OnDataRecived;
             myServer.OnClientConnected += MyServer_OnClientConnected;
 
             btnSendData.Visible = false;
@@ -148,7 +148,7 @@ namespace Container
 
         private void MyServer_OnClientConnected(Socket client)
         {
-            myServer.StartReciving();
+            myServer.StartReceiving();
         }
 
         private void MyServer_OnDataRecived(string data, TransmitedDataType dataType)
@@ -164,7 +164,7 @@ namespace Container
         {
             client = new ClientModel();
             client.OnConnectedToServer += Client_OnConnectedToServer;
-            client.OnDataRecived += Client_OnDataRecived;
+            client.OnDataReceived += Client_OnDataRecived;
             client.ConnectToServer();
 
             btnsendfromserver.Visible = false;
@@ -192,7 +192,7 @@ namespace Container
 
         private void Client_OnConnectedToServer(Socket server)
         {
-            client.StartReciving();
+            client.StartReceiving();
         }
 
         private void btnSendData_Click(object sender, EventArgs e)

@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace RightMechanics
 {
-    //data send and recived enum type
+    //data send and Received enum type
     public enum TransmitedDataType
     {
         Unknown = 0,
@@ -21,8 +21,8 @@ namespace RightMechanics
     public class ServerModel
     {
 
-        public delegate void OnDataRecivedDelegate(string data, TransmitedDataType dataType);
-        public event OnDataRecivedDelegate OnDataRecived;
+        public delegate void OnDataReceivedDelegate(string data, TransmitedDataType dataType);
+        public event OnDataReceivedDelegate OnDataReceived;
         public delegate void OnClientConnectedDelegate(Socket client);
         public event OnClientConnectedDelegate OnClientConnected;
 
@@ -34,8 +34,8 @@ namespace RightMechanics
         IPAddress ipAd;
         TcpListener server;
         Socket client;
-        bool stopReciver = false;
-        string latestRecivedData = null;
+        bool stopReceiver = false;
+        string latestReceivedData = null;
 
         bool connected = false;
         public bool IsConnected { get { return connected; } }
@@ -76,7 +76,7 @@ namespace RightMechanics
             OnClientConnected.Invoke(client);
         }
 
-        public void StartReciving()
+        public void StartReceiving()
         {
             if (!connected)
                 return;
@@ -94,14 +94,14 @@ namespace RightMechanics
             {
                 client.ReceiveAsync(recieveArgs);
                 readEvent.WaitOne();//Wait for recieve
-            } while (!stopReciver);
+            } while (!stopReceiver);
             recieveArgs.Completed -= recieveArgs_Completed;
 
         }
 
-        public void StopReciving()
+        public void StopReceiving()
         {
-            stopReciver = true;
+            stopReceiver = true;
         }
 
         void recieveArgs_Completed(object sender, SocketAsyncEventArgs e)
@@ -111,26 +111,26 @@ namespace RightMechanics
             var are = (AutoResetEvent)e.UserToken;
             are.Set();
 
-            latestRecivedData = "";
+            latestReceivedData = "";
             for (int i = 0; i < e.BytesTransferred; i++)
-                latestRecivedData += Convert.ToChar(e.Buffer[i]);
-            latestRecivedData = latestRecivedData.TrimEnd();
+                latestReceivedData += Convert.ToChar(e.Buffer[i]);
+            latestReceivedData = latestReceivedData.TrimEnd();
 
-            if (latestRecivedData.Length > 4 && latestRecivedData.StartsWith("C"))
+            if (latestReceivedData.Length > 4 && latestReceivedData.StartsWith("C"))
             {
-                datatype = latestRecivedData.StartsWith("C101") ? TransmitedDataType.Message : latestRecivedData.StartsWith("C102") ?
-                    TransmitedDataType.Status : latestRecivedData.StartsWith("C103") ? TransmitedDataType.Command :
-                    latestRecivedData.StartsWith("C104") ? TransmitedDataType.Headers : latestRecivedData.StartsWith("C105")? TransmitedDataType.RawData: TransmitedDataType.Unknown;
+                datatype = latestReceivedData.StartsWith("C101") ? TransmitedDataType.Message : latestReceivedData.StartsWith("C102") ?
+                    TransmitedDataType.Status : latestReceivedData.StartsWith("C103") ? TransmitedDataType.Command :
+                    latestReceivedData.StartsWith("C104") ? TransmitedDataType.Headers : latestReceivedData.StartsWith("C105")? TransmitedDataType.RawData: TransmitedDataType.Unknown;
                 if (datatype != TransmitedDataType.Unknown)
-                    latestRecivedData = latestRecivedData.Substring(4);
+                    latestReceivedData = latestReceivedData.Substring(4);
             }
 
-            OnDataRecived.Invoke(latestRecivedData, datatype);
+            OnDataReceived.Invoke(latestReceivedData, datatype);
         }
 
-        public string GetTheLatestRecivedData()
+        public string GetTheLatestReceivedData()
         {
-            return latestRecivedData;
+            return latestReceivedData;
         }
 
         public void SendData(string data, TransmitedDataType dataType)
@@ -153,8 +153,8 @@ namespace RightMechanics
 
     public class ClientModel
     {
-        public delegate void OnDataRecivedDelegate(string data, TransmitedDataType dataType);
-        public event OnDataRecivedDelegate OnDataRecived;
+        public delegate void OnDataReceivedDelegate(string data, TransmitedDataType dataType);
+        public event OnDataReceivedDelegate OnDataReceived;
         public delegate void OnConnectedToServerDelegate(Socket server);
         public event OnConnectedToServerDelegate OnConnectedToServer;
 
@@ -163,10 +163,10 @@ namespace RightMechanics
 
         public int BufferSize = 2000;
         TcpClient client;
-        bool stopReciver = false;
+        bool stopReceiver = false;
         System.IO.Stream connectionStream;
         bool connected = false;
-        string latestRecivedData = null;
+        string latestReceivedData = null;
 
         public bool IsConnected { get { return connected; } }
 
@@ -232,36 +232,36 @@ namespace RightMechanics
                 if (datatype != TransmitedDataType.Unknown)
                     data = data.Substring(4);
             }
-            latestRecivedData = data;
+            latestReceivedData = data;
 
-            OnDataRecived.Invoke(data, datatype);
+            OnDataReceived.Invoke(data, datatype);
 
-            //if (!stopReciver)
+            //if (!stopReceiver)
             //{
             //    buffer = new byte[BufferSize];
             //    connectionStream.BeginRead(buffer, 0, BufferSize, dataRead, buffer);
             //}
 
         }
-        public void StartReciving()
+        public void StartReceiving()
         {
             if (!connected)
                 return;
-            stopReciver = false;
+            stopReceiver = false;
             byte[] buffer = new byte[BufferSize];
 
             connectionStream.BeginRead(buffer, 0, BufferSize, dataRead, buffer);
 
         }
 
-        public void StopReciving()
+        public void StopReceiving()
         {
-            stopReciver = true;
+            stopReceiver = true;
         }
 
-        public string GetTheLatestRecivedData()
+        public string GetTheLatestReceivedData()
         {
-            return latestRecivedData;
+            return latestReceivedData;
         }
         public void Disconnect()
         {
