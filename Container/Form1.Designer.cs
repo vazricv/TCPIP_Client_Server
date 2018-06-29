@@ -30,6 +30,10 @@
 		{
             this.components = new System.ComponentModel.Container();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button3 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.btnStartSimulation = new System.Windows.Forms.Button();
             this.btnrot = new System.Windows.Forms.Button();
             this.btnpos = new System.Windows.Forms.Button();
@@ -47,11 +51,8 @@
             this.btnSend = new System.Windows.Forms.Button();
             this.unityHWNDLabel = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.btnStopSimulation = new System.Windows.Forms.Button();
             this.panel1 = new Container.SelectablePanel();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -71,6 +72,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.btnStopSimulation);
             this.splitContainer1.Panel2.Controls.Add(this.button3);
             this.splitContainer1.Panel2.Controls.Add(this.textBox1);
             this.splitContainer1.Panel2.Controls.Add(this.button2);
@@ -95,6 +97,44 @@
             this.splitContainer1.SplitterDistance = 705;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(176, 451);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 20;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(55, 453);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 19;
+            this.textBox1.Text = "10";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(214, 411);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(132, 23);
+            this.button2.TabIndex = 18;
+            this.button2.Text = "send next";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(55, 364);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(132, 23);
+            this.button1.TabIndex = 17;
+            this.button1.Text = "Send Headers";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnStartSimulation
             // 
@@ -147,7 +187,7 @@
             this.txtMessage.Location = new System.Drawing.Point(68, 38);
             this.txtMessage.Multiline = true;
             this.txtMessage.Name = "txtMessage";
-            this.txtMessage.Size = new System.Drawing.Size(375, 110);
+            this.txtMessage.Size = new System.Drawing.Size(374, 110);
             this.txtMessage.TabIndex = 2;
             // 
             // btnDisconnect
@@ -254,25 +294,15 @@
             this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // button1
+            // btnStopSimulation
             // 
-            this.button1.Location = new System.Drawing.Point(55, 364);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(132, 23);
-            this.button1.TabIndex = 17;
-            this.button1.Text = "Send Headers";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(214, 411);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(132, 23);
-            this.button2.TabIndex = 18;
-            this.button2.Text = "send next";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.btnStopSimulation.Location = new System.Drawing.Point(352, 364);
+            this.btnStopSimulation.Name = "btnStopSimulation";
+            this.btnStopSimulation.Size = new System.Drawing.Size(132, 23);
+            this.btnStopSimulation.TabIndex = 21;
+            this.btnStopSimulation.Text = "Stop Simulation";
+            this.btnStopSimulation.UseVisualStyleBackColor = true;
+            this.btnStopSimulation.Click += new System.EventHandler(this.btnStopSimulation_Click);
             // 
             // panel1
             // 
@@ -284,24 +314,6 @@
             this.panel1.TabIndex = 1;
             this.panel1.TabStop = true;
             this.panel1.Resize += new System.EventHandler(this.panel1_Resize);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(55, 453);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 22);
-            this.textBox1.TabIndex = 19;
-            this.textBox1.Text = "10";
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(176, 451);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 20;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Form1
             // 
@@ -350,6 +362,7 @@
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Button btnStopSimulation;
     }
 }
 

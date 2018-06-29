@@ -137,7 +137,7 @@ namespace Container
         private void btnServer_Click(object sender, EventArgs e)
         {
 
-            myServer = new ServerModel();
+            myServer = new ServerModel("127.0.0.1");
             myServer.AcceptConnection();
             myServer.OnDataReceived += MyServer_OnDataRecived;
             myServer.OnClientConnected += MyServer_OnClientConnected;
@@ -162,8 +162,8 @@ namespace Container
         }
         private void btnClient_Click(object sender, EventArgs e)
         {
-            client = new ClientModel();
-            client.OnConnectedToServer += Client_OnConnectedToServer;
+            client = new ClientModel("127.0.0.1");
+           // client.OnConnectedToServer += Client_OnConnectedToServer;
             client.OnDataReceived += Client_OnDataRecived;
             client.ConnectToServer();
 
@@ -190,10 +190,10 @@ namespace Container
             }
         }
 
-        private void Client_OnConnectedToServer(Socket server)
-        {
-            client.StartReceiving();
-        }
+        //private void Client_OnConnectedToServer(Socket server)
+        //{
+        //    client.StartReceiving();
+        //}
 
         private void btnSendData_Click(object sender, EventArgs e)
         {
@@ -210,6 +210,7 @@ namespace Container
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
             client.Disconnect();
+            timer1.Stop();
         }
 
         private void btnCloseServer_Click(object sender, EventArgs e)
@@ -294,6 +295,20 @@ namespace Container
         private void button3_Click(object sender, EventArgs e)
         {
             timer1.Interval = Int32.Parse(textBox1.Text);
+        }
+
+        private void btnStopSimulation_Click(object sender, EventArgs e)
+        {
+            if (btnStopSimulation.Text.StartsWith("Stop"))
+            {
+                timer1.Stop();
+                btnStopSimulation.Text = "Resume Simulation";
+            }
+            else
+            {
+                timer1.Start();
+                btnStopSimulation.Text = "Stop Simulation";
+            }
         }
     }
 }
