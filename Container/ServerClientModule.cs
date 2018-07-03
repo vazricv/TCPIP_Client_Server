@@ -25,7 +25,8 @@ namespace RightMechanics
         Connected,
         LostConnection,
         Disconnected,
-        NetworkError
+        NetworkError,
+        FailedToConnect
     }
     public class ServerModel
     {
@@ -34,7 +35,8 @@ namespace RightMechanics
         public event OnDataReceivedDelegate OnDataReceived;
         public delegate void OnClientConnectedDelegate(Socket client);
         public event OnClientConnectedDelegate OnClientConnected;
-
+        public delegate void OnClientDisconnectedDelegate();
+        public event OnClientDisconnectedDelegate OnClientDisconnected;
 
         public string IP = "127.0.0.1";
         public int port = 8001;
@@ -58,7 +60,7 @@ namespace RightMechanics
 
         public ServerModel(string IP = null, int port = 8001, int bufferSize = 2000)
         {
-            if (IP == null)
+            if (string.IsNullOrWhiteSpace(IP))
                 IP = LocalHost.MyLocalIPAddress();
 
             this.BufferSize = bufferSize;
@@ -69,7 +71,17 @@ namespace RightMechanics
             
             State = NetworkStates.Initialized;
         }
-        
+
+        ~ServerModel()
+        {
+            if (connected)
+            {
+                StopReceiving();
+                Disconnect();
+                server = null;
+                client = null;
+            }
+        }
         public bool DropAndReset()
         {
             if(State != NetworkStates.WaitingForConnection)
@@ -207,6 +219,8 @@ namespace RightMechanics
                         {
                             StopReceiving();
                             DropAndReset();
+                            if (OnClientDisconnected != null)
+                                OnClientDisconnected.Invoke();
                         }
                         // return;
                     }
@@ -257,6 +271,8 @@ namespace RightMechanics
         public event OnDataReceivedDelegate OnDataReceived;
         public delegate void OnConnectedToServerDelegate(Socket server);
         public event OnConnectedToServerDelegate OnConnectedToServer;
+        public delegate void OnServerDisconnectedDelegate();
+        public event OnServerDisconnectedDelegate OnServerDisconnected;
 
         public string IP = "127.0.0.1";
         public int port = 8001;
@@ -280,7 +296,7 @@ namespace RightMechanics
 
         public ClientModel(string IP = null, int port = 8001, int bufferSize = 2000)
         {
-            if (IP == null)
+            if (string.IsNullOrWhiteSpace(IP))
                 IP = LocalHost.MyLocalIPAddress();
 
             this.IP = IP;
@@ -290,12 +306,32 @@ namespace RightMechanics
             State = NetworkStates.Initialized;
         }
 
-        public void ConnectToServer()
+         ~ClientModel()
+        {
+            if(connected)
+            {
+                StopReceiving();
+                Disconnect();
+                client = null;
+            }
+        }
+
+        public bool ConnectToServer()
         {
 
             try
             {
-                client.Connect(IP, port);
+
+                IAsyncResult ar = client.BeginConnect(IP, port, null, client);
+                bool result = ar.AsyncWaitHandle.WaitOne(1000, false);
+
+                if (!result || !client.Connected)
+                {
+                    State = NetworkStates.FailedToConnect;
+                    return false;
+                }
+               
+                //client.Connect(IP, port);
                 // use the ipaddress as in the server program
                 connectionStream = client.GetStream();
                 Console.WriteLine("Connected");
@@ -307,16 +343,24 @@ namespace RightMechanics
                 SendData(State.ToString(), TransmitedDataType.Status);
                 if (AutoStart)
                     StartReceiving();
+                return true;
             }
-            catch (Exception e)
+            catch (System.Net.Sockets.SocketException sockEx)
             {
-                networkError = e;
+                networkError = sockEx;
                 State = NetworkStates.NetworkError;
-
-                //Console.WriteLine("Error..... " + err.StackTrace);
             }
+            return false;
         }
 
+        public void SendPositionAndOrientation(string position,string orientation)
+        {
+            SendData(position+"\n"+orientation, TransmitedDataType.RawData);
+        }
+        public void SendCommand(string command)
+        {
+            SendData(command, TransmitedDataType.Command);
+        }
         public void SendData(string data, TransmitedDataType dataType)
         {
             if (IsConnected)
@@ -369,6 +413,10 @@ namespace RightMechanics
                         if (ServerState == NetworkStates.Disconnected)
                         {
                             StopReceiving();
+                            State = NetworkStates.Disconnected;
+                            connected = false;
+                            if (OnServerDisconnected != null)
+                                OnServerDisconnected.Invoke();
                         }
                         // return;
                     }

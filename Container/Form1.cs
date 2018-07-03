@@ -97,6 +97,8 @@ namespace Container
         {
             try
             {
+                client.Disconnect();
+                client = null;
                 process.CloseMainWindow();
 
                 Thread.Sleep(1000);
@@ -162,13 +164,15 @@ namespace Container
         }
         private void btnClient_Click(object sender, EventArgs e)
         {
-            client = new ClientModel("127.0.0.1");
+            //client = new ClientModel("127.0.0.1");
+            client = new ClientModel();
            // client.OnConnectedToServer += Client_OnConnectedToServer;
             client.OnDataReceived += Client_OnDataRecived;
             client.ConnectToServer();
 
             btnsendfromserver.Visible = false;
             btnServer.Visible = false;
+            btnCloseServer.Visible = false;
         }
 
         private void Client_OnDataRecived(string data, TransmitedDataType dataType)
