@@ -321,17 +321,17 @@ namespace RightMechanics
 
             try
             {
+                //commenting out this section since when connecting in a loop it throws exception becaue here we used asyc
+             //   IAsyncResult ar = client.BeginConnect(IP, port, null, client);
+               // bool result = ar.AsyncWaitHandle.WaitOne(10, false);
 
-                IAsyncResult ar = client.BeginConnect(IP, port, null, client);
-                bool result = ar.AsyncWaitHandle.WaitOne(1000, false);
-
-                if (!result || !client.Connected)
-                {
-                    State = NetworkStates.FailedToConnect;
-                    return false;
-                }
+                //if (!result || !client.Connected)
+                //{
+                //    State = NetworkStates.FailedToConnect;
+                //    return false;
+                //}
                
-                //client.Connect(IP, port);
+                client.Connect(IP, port);
                 // use the ipaddress as in the server program
                 connectionStream = client.GetStream();
                 Console.WriteLine("Connected");

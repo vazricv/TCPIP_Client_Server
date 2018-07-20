@@ -168,7 +168,11 @@ namespace Container
             client = new ClientModel();
            // client.OnConnectedToServer += Client_OnConnectedToServer;
             client.OnDataReceived += Client_OnDataRecived;
-            client.ConnectToServer();
+            while(!client.ConnectToServer())
+            {
+                Thread.Sleep(100);
+            }
+            NetworkStates clientState = client.State;
 
             btnsendfromserver.Visible = false;
             btnServer.Visible = false;
