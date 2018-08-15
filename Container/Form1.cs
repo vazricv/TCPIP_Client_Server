@@ -11,11 +11,10 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.Windows.Forms.VisualStyles;
 //using System.Messaging;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using RightMechanics;
+using com.noorcon.rightmechanics;
 
 namespace Container
 {
@@ -139,7 +138,7 @@ namespace Container
         private void btnServer_Click(object sender, EventArgs e)
         {
 
-            myServer = new ServerModel("127.0.0.1");
+            myServer = new ServerModel();
             myServer.AcceptConnection();
             myServer.OnDataReceived += MyServer_OnDataRecived;
             myServer.OnClientConnected += MyServer_OnClientConnected;

@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace RightMechanics
+namespace com.noorcon.rightmechanics
 {
     //data send and Received enum type
     public enum TransmitedDataType
@@ -39,7 +39,7 @@ namespace RightMechanics
         public event OnClientDisconnectedDelegate OnClientDisconnected;
 
         public string IP = "127.0.0.1";
-        public int port = 8001;
+        public int port = 452;
         public int BufferSize = 2000;
         public bool AutoStart = true;
 
@@ -58,9 +58,9 @@ namespace RightMechanics
         bool connected = false;
         public bool IsConnected { get { return connected; } }
 
-        public ServerModel(string IP = null, int port = 8001, int bufferSize = 2000)
+        public ServerModel(string IP = null, int port = 452, int bufferSize = 2000)
         {
-            if (string.IsNullOrWhiteSpace(IP))
+            if (string.IsNullOrEmpty(IP))
                 IP = LocalHost.MyLocalIPAddress();
 
             this.BufferSize = bufferSize;
@@ -72,16 +72,16 @@ namespace RightMechanics
             State = NetworkStates.Initialized;
         }
 
-        ~ServerModel()
-        {
-            if (connected)
-            {
-                StopReceiving();
-                Disconnect();
-                server = null;
-                client = null;
-            }
-        }
+        //~ServerModel()
+        //{
+        //    if (connected)
+        //    {
+        //        StopReceiving();
+        //        Disconnect();
+        //        server = null;
+        //        client = null;
+        //    }
+        //}
         public bool DropAndReset()
         {
             if(State != NetworkStates.WaitingForConnection)
@@ -113,13 +113,15 @@ namespace RightMechanics
         {
             if (connected)
             {
+                stopReceiver = true;
                 SendData(NetworkStates.Disconnected.ToString(), TransmitedDataType.Status);
-                client.Disconnect(false);
-                server.Stop();
-                client.Close();
-                client = null;
+                System.Threading.Thread.Sleep(2000);
+                
                 connected = false;
-                  StopReceiving();
+                
+                server.Stop();
+                client = null;
+                server = null;
             }
             State = NetworkStates.Disconnected;
         }
@@ -136,6 +138,7 @@ namespace RightMechanics
                     OnClientConnected.Invoke(client);
 
                 State = NetworkStates.Connected;
+                ClientState = NetworkStates.Connected;
                 networkError = null;
                 SendData(State.ToString(), TransmitedDataType.Status);
                 if (AutoStart)
@@ -194,9 +197,10 @@ namespace RightMechanics
             are.Set();
 
             latestReceivedData = "";
-            for (int i = 0; i < e.BytesTransferred; i++)
-                latestReceivedData += Convert.ToChar(e.Buffer[i]);
-            latestReceivedData = latestReceivedData.TrimEnd();
+          //  for (int i = 0; i < e.BytesTransferred; i++)
+            //    latestReceivedData += Convert.ToChar(e.Buffer[i]);
+            latestReceivedData = System.Text.Encoding.Default.GetString(e.Buffer).TrimEnd();
+            //latestReceivedData = latestReceivedData.TrimEnd();
 
             if (latestReceivedData.Length > 4 && latestReceivedData.StartsWith("C"))
             {
@@ -275,7 +279,7 @@ namespace RightMechanics
         public event OnServerDisconnectedDelegate OnServerDisconnected;
 
         public string IP = "127.0.0.1";
-        public int port = 8001;
+        public int port = 452;
 
         public int BufferSize = 2000;
         public bool AutoStart = true;
@@ -294,9 +298,9 @@ namespace RightMechanics
 
         public bool IsConnected { get { return connected; } }
 
-        public ClientModel(string IP = null, int port = 8001, int bufferSize = 2000)
+        public ClientModel(string IP = null, int port = 452, int bufferSize = 2000)
         {
-            if (string.IsNullOrWhiteSpace(IP))
+            if (string.IsNullOrEmpty(IP))
                 IP = LocalHost.MyLocalIPAddress();
 
             this.IP = IP;
@@ -306,31 +310,31 @@ namespace RightMechanics
             State = NetworkStates.Initialized;
         }
 
-         ~ClientModel()
-        {
-            if(connected)
-            {
-                StopReceiving();
-                Disconnect();
-                client = null;
-            }
-        }
+        // ~ClientModel()
+        //{
+        //    if(connected)
+        //    {
+        //        StopReceiving();
+        //        Disconnect();
+        //        client = null;
+        //    }
+        //}
 
         public bool ConnectToServer()
         {
 
             try
             {
-                //commenting out this section since when connecting in a loop it throws exception becaue here we used asyc
-             //   IAsyncResult ar = client.BeginConnect(IP, port, null, client);
-               // bool result = ar.AsyncWaitHandle.WaitOne(10, false);
+                //commenting out this section since when connecting in a loop it throws exception becaue here we used iasyc
+                //IAsyncResult ar = client.BeginConnect(IP, port, null, client);
+                //bool result = ar.AsyncWaitHandle.WaitOne(1000, false);
 
                 //if (!result || !client.Connected)
                 //{
                 //    State = NetworkStates.FailedToConnect;
                 //    return false;
                 //}
-               
+
                 client.Connect(IP, port);
                 // use the ipaddress as in the server program
                 connectionStream = client.GetStream();
@@ -339,6 +343,7 @@ namespace RightMechanics
                 if (OnConnectedToServer != null)
                     OnConnectedToServer.Invoke(client.Client);
                 State = NetworkStates.Connected;
+                ServerState = NetworkStates.Connected;
                 networkError = null;
                 SendData(State.ToString(), TransmitedDataType.Status);
                 if (AutoStart)
@@ -378,6 +383,7 @@ namespace RightMechanics
                     Console.WriteLine("Transmitting.....");
 
                     connectionStream.Write(ba, 0, ba.Length);
+                    connectionStream.EndWrite(null);
                     networkError = null;
                 }
                 catch(Exception e)
@@ -414,7 +420,9 @@ namespace RightMechanics
                         {
                             StopReceiving();
                             State = NetworkStates.Disconnected;
+                            ServerState = NetworkStates.Disconnected;
                             connected = false;
+                            client.Close();
                             if (OnServerDisconnected != null)
                                 OnServerDisconnected.Invoke();
                         }
@@ -463,6 +471,9 @@ namespace RightMechanics
             {
                 stopReceiver = true;
                 connectionStream.EndRead(null);
+                
+                connectionStream.Flush();
+                connectionStream.Close();
             }
             catch(Exception e)
             {
@@ -486,8 +497,6 @@ namespace RightMechanics
                     System.Threading.Thread.Sleep(2000);
                     StopReceiving();
                     client.Close();
-                    //client = new TcpClient();
-
                     connected = false;
                     
                  
